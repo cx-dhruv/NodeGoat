@@ -21,14 +21,14 @@ function ProfileHandler(db) {
             if (err) return next(err);
             doc.userId = userId;
 
-            // @TODO @FIXME
-            // while the developer intentions were correct in encoding the user supplied input so it
-            // doesn't end up as an XSS attack, the context is incorrect as it is encoding the firstname for HTML
-            // while this same variable is also used in the context of a URL link element
-            doc.website = ESAPI.encoder().encodeForHTML(doc.website);
-            // fix it by replacing the above with another template variable that is used for 
-            // the context of a URL in a link header
-            // doc.website = ESAPI.encoder().encodeForURL(doc.website)
+            // Encode website for safe URL context to prevent XSS and injection
+            // Use URL encoding since this variable is used in an href attribute
+            doc.website = ESAPI.encoder().encodeForURL(doc.website);
+            // Also create an HTML-safe version for display in text context
+            doc.websiteDisplay = ESAPI.encoder().encodeForHTML(doc.website);
+            
+            // Encode firstName for URL context in the href attribute
+            doc.firstNameSafeString = ESAPI.encoder().encodeForURL(doc.firstName);
 
             return res.render("profile", {
                 ...doc,
@@ -61,7 +61,8 @@ function ProfileHandler(db) {
         const testComplyWithRequirements = regexPattern.test(bankRouting);
         // if the regex test fails we do not allow saving
         if (testComplyWithRequirements !== true) {
-            const firstNameSafeString = firstName;
+            // Properly encode firstName for URL context
+            const firstNameSafeString = ESAPI.encoder().encodeForURL(firstName);
             return res.render("profile", {
                 updateError: "Bank Routing number does not comply with requirements for format specified",
                 firstNameSafeString,

@@ -27,6 +27,8 @@ const httpsOptions = {
 };
 */
 
+var secrertKey = '67ggg67g6gg7g67g67'; 
+
 MongoClient.connect(db, (err, db) => {
     if (err) {
         console.log("Error: DB: connect");

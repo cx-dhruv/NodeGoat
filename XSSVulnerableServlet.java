@@ -6,10 +6,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 public class XSSVulnerableServlet extends HttpServlet {
     
     private static final long serialVersionUID = 1L;
+
+    
 
     public XSSVulnerableServlet() {
         super();
@@ -18,7 +21,7 @@ public class XSSVulnerableServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
-    }
+    } 
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -34,16 +37,16 @@ public class XSSVulnerableServlet extends HttpServlet {
         String userInput = request.getParameter("name");
 
         try {
-            // Display the user input directly in the response without escaping it (XSS vulnerable)
+            // Display the user input with proper HTML escaping to prevent XSS attacks
             out.println("<html>");
             out.println("<head><title>XSS Vulnerable Example</title></head>");
             out.println("<body>");
             out.println("<h1>Welcome to the XSS Vulnerable Page</h1>");
-            out.println("<p>Hello, " + userInput + "!</p>"); // No escaping, XSS vulnerability here
+            out.println("<p>Hello, " + StringEscapeUtils.escapeHtml4(userInput) + "!</p>"); // XSS vulnerability fixed with HTML entity encoding
             out.println("</body>");
             out.println("</html>");
         } finally {
-            out.close();
+            out.close(); 
         }
     }
 }
